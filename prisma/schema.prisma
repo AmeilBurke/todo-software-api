@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model Todo {
+  todo_id            Int      @id @default(autoincrement())
+  todo_content       String
+  todo_isCompleted   Boolean
+  todo_dateCompleted String?
+  todo_completedBy   Int?
+  TodoPage           TodoPage @relation(fields: [todoPage_id], references: [todoPage_id])
+  todoPage_id        Int
+}
+
+model TodoPage {
+  todoPage_id             Int          @id @default(autoincrement())
+  todoPage_heading        String
+  todoPage_description    String
+  todoPage_todoList       Todo[]
+  todoPage_createdDate    String
+  todoPage_isPageArchived Boolean
+  AccountId               Account      @relation(fields: [accountId], references: [account_id], name: "accountId", onDelete: NoAction, onUpdate: NoAction)
+  accountId               Int
+  InvitedPages            InvitedPages @relation(fields: [invitedPages_id], references: [invitedPages_id], onDelete: NoAction, onUpdate: NoAction)
+  invitedPages_id         Int
+}
+
+model Account {
+  account_id                  Int           @id @default(autoincrement())
+  account_username            String        @unique
+  account_email               String        @unique
+  account_password            String
+  account_todoPages           TodoPage[]    @relation("accountId")
+  InvitedPages                InvitedPages? @relation(fields: [invitedPagesInvitedPages_id], references: [invitedPages_id])
+  // invitedPagesInvitedPages_id Int[]
+}
+
+model InvitedPages {
+  invitedPages_id                  Int        @id @default(autoincrement())
+  invitedPages_todoPage_id         Int
+  invitedPages_invited_accounts_id Account[]
+  TodoPage                         TodoPage[]
+}
