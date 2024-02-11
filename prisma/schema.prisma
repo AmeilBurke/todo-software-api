@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlserver"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -21,31 +21,29 @@ model Todo {
 }
 
 model TodoPage {
-  todoPage_id             Int          @id @default(autoincrement())
+  todoPage_id             Int               @id @default(autoincrement())
   todoPage_heading        String
   todoPage_description    String
   todoPage_todoList       Todo[]
   todoPage_createdDate    String
   todoPage_isPageArchived Boolean
-  AccountId               Account      @relation(fields: [accountId], references: [account_id], name: "accountId", onDelete: NoAction, onUpdate: NoAction)
-  accountId               Int
-  InvitedPages            InvitedPages @relation(fields: [invitedPages_id], references: [invitedPages_id], onDelete: NoAction, onUpdate: NoAction)
-  invitedPages_id         Int
+  InvitedAccounts         InvitedAccounts[]
 }
 
 model Account {
-  account_id                  Int           @id @default(autoincrement())
-  account_username            String        @unique
-  account_email               String        @unique
-  account_password            String
-  account_todoPages           TodoPage[]    @relation("accountId")
-  InvitedPages                InvitedPages? @relation(fields: [invitedPagesInvitedPages_id], references: [invitedPages_id])
-  // invitedPagesInvitedPages_id Int[]
+  account_id       Int               @id @default(autoincrement())
+  account_username String            @unique
+  account_email    String            @unique
+  account_password String
+  InvitedAccounts  InvitedAccounts[]
 }
 
-model InvitedPages {
-  invitedPages_id                  Int        @id @default(autoincrement())
-  invitedPages_todoPage_id         Int
-  invitedPages_invited_accounts_id Account[]
-  TodoPage                         TodoPage[]
+model InvitedAccounts {
+  todoPage    TodoPage @relation(fields: [todoPage_id], references: [todoPage_id])
+  todoPage_id Int
+
+  account    Account @relation(fields: [account_id], references: [account_id])
+  account_id Int
+
+  @@id([todoPage_id, account_id])
 }
