@@ -1,26 +1,90 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class AccountsService {
-  create(createAccountDto: CreateAccountDto) {
-    return 'This action adds a new account';
+  constructor(private prisma: PrismaService) {}
+
+  async create(createAccountDto: CreateAccountDto) {
+    try {
+      return await this.prisma.account.create({
+        data: {
+          account_username: createAccountDto.accountUsername
+            .toLocaleLowerCase()
+            .trim(),
+          account_email: createAccountDto.accountEmail
+            .toLocaleLowerCase()
+            .trim(),
+          account_password: createAccountDto.accountPassword,
+        },
+      });
+    } catch (error) {
+      if (error.name) {
+        return 'you have uploaded the wrong data to the database';
+      }
+      return error;
+    }
   }
 
-  findAll() {
-    return `This action returns all accounts`;
+  async findAll() {
+    try {
+      return this.prisma.account.findMany();
+    } catch (error) {
+      return error;
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} account`;
+  async findOne(id: string) {
+    try {
+      if (id.includes('@')) {
+        return this.prisma.account.findFirst({
+          where: { account_email: id },
+        });
+      } else {
+        return this.prisma.account.findFirst({
+          where: { account_id: Number(id) },
+        });
+      }
+    } catch (error) {
+      return error;
+    }
   }
 
-  update(id: number, updateAccountDto: UpdateAccountDto) {
-    return `This action updates a #${id} account`;
+  async update(id: string, updateAccountDto: UpdateAccountDto) {
+    try {
+      return await this.prisma.account.update({
+        where: {
+          account_id: Number(id),
+        },
+        data: {
+          account_username: updateAccountDto.accountUsername
+            .toLocaleLowerCase()
+            .trim(),
+          account_password: updateAccountDto.accountPassword
+            .toLocaleLowerCase()
+            .trim(),
+        },
+      });
+    } catch (error) {
+      return error;
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} account`;
+  async remove(id: string) {
+    try {
+      if (id.includes('@')) {
+        return this.prisma.account.delete({
+          where: { account_email: id },
+        });
+      } else {
+        return this.prisma.account.delete({
+          where: { account_id: Number(id) },
+        });
+      }
+    } catch (error) {
+      return error;
+    }
   }
 }
