@@ -10,16 +10,13 @@ export class TodoPagesService {
   async create(createTodoPage: CreateTodoPageDto) {
     try {
       const currentDate = new Date();
-      const year = currentDate.getFullYear();
-      const month = currentDate.getMonth() + 1;
-      const day = currentDate.getDay() + 1;
 
       return await this.prisma.todoPage.create({
         data: {
-          todoPage_heading: createTodoPage.todoPage_heading
+          todoPage_heading: createTodoPage.todoPageHeading
             .toLocaleLowerCase()
             .trim(),
-          todoPage_description: createTodoPage.todoPage_description
+          todoPage_description: createTodoPage.todoPageDescription
             .toLocaleLowerCase()
             .trim(),
           todoPage_isPageArchived: false,
@@ -59,13 +56,13 @@ export class TodoPagesService {
           todoPage_id: Number(id),
         },
         data: {
-          todoPage_heading: updateTodoPageDto.todoPage_heading
+          todoPage_heading: updateTodoPageDto.todoPageHeading
             .toLocaleLowerCase()
             .trim(),
-          todoPage_description: updateTodoPageDto.todoPage_description
+          todoPage_description: updateTodoPageDto.todoPageDescription
             .toLocaleLowerCase()
             .trim(),
-          todoPage_isPageArchived: updateTodoPageDto.todoPage_isPageArchived,
+          todoPage_isPageArchived: updateTodoPageDto.todoPageIsPageArchived,
         },
       });
     } catch (error) {
