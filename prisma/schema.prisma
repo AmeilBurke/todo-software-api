@@ -35,6 +35,8 @@ model Account {
   account_username String            @unique
   account_email    String            @unique
   account_password String
+  role             Role              @relation(fields: [account_role], references: [role_id])
+  account_role     Int
   InvitedAccounts  InvitedAccounts[]
 }
 
@@ -46,4 +48,10 @@ model InvitedAccounts {
   account_id Int
 
   @@id([todoPage_id, account_id])
+}
+
+model Role {
+  role_id   Int       @id @default(autoincrement())
+  role_name String    @unique
+  Account   Account[]
 }

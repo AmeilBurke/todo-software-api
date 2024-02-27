@@ -1,4 +1,4 @@
-import { IsEmail } from "class-validator";
+import { IsEmail } from 'class-validator';
 
 // returns 400 error if email is not valid
 export class CreateAccountDto {
@@ -6,4 +6,5 @@ export class CreateAccountDto {
   @IsEmail()
   accountEmail: string;
   accountPassword: string;
+  acocuntRole: number;
 }

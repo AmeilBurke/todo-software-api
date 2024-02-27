@@ -18,6 +18,7 @@ export class AccountsService {
             .toLocaleLowerCase()
             .trim(),
           account_password: createAccountDto.accountPassword,
+          account_role: createAccountDto.acocuntRole,
         },
       });
     } catch (error) {
