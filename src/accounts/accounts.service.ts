@@ -2,13 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
 import { PrismaService } from 'src/prisma.service';
+import { encryptPassword } from 'src/bcrypt/encryptPassword';
 
+// need to implement return types
 @Injectable()
 export class AccountsService {
   constructor(private prisma: PrismaService) {}
 
   async create(createAccountDto: CreateAccountDto) {
     try {
+      const encryptedPassword = await encryptPassword(
+        createAccountDto.accountPassword.trim().toLocaleLowerCase(),
+      );
       return await this.prisma.account.create({
         data: {
           account_username: createAccountDto.accountUsername
@@ -17,8 +22,8 @@ export class AccountsService {
           account_email: createAccountDto.accountEmail
             .toLocaleLowerCase()
             .trim(),
-          account_password: createAccountDto.accountPassword,
-          account_role: createAccountDto.acocuntRole,
+          account_password: encryptedPassword,
+          account_role: createAccountDto.accountRole,
         },
       });
     } catch (error) {

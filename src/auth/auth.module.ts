@@ -6,6 +6,8 @@ import { AuthService } from './auth.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { AccountsModule } from 'src/accounts/accounts.module';
 
+// TODO: implement bcrypt
+
 @Module({
   imports: [
     AccountsModule,

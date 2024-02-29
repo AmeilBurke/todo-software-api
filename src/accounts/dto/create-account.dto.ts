@@ -6,5 +6,5 @@ export class CreateAccountDto {
   @IsEmail()
   accountEmail: string;
   accountPassword: string;
-  acocuntRole: number;
+  accountRole: number;
 }
