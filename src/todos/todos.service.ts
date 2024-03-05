@@ -2,12 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { PrismaService } from 'src/prisma.service';
+import {
+  PrismaClientKnownRequestError,
+  PrismaClientUnknownRequestError,
+} from '@prisma/client/runtime/library';
+import { Todo } from '@prisma/client';
 
 @Injectable()
 export class TodosService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createTodoDto: CreateTodoDto) {
+  async create(createTodoDto: CreateTodoDto): Promise<Todo | string> {
     try {
       await this.prisma.todo.create({
         data: {
@@ -18,19 +23,36 @@ export class TodosService {
         },
       });
     } catch (error) {
-      return error;
+      if (error?.name === 'PrismaClientKnownRequestError') {
+        const prismaKnownRequestError = error as PrismaClientKnownRequestError;
+        return prismaKnownRequestError.code;
+      }
+
+      if (error?.name === 'PrismaClientUnknownRequestError') {
+        const prismaUnknownRequestError =
+          error as PrismaClientUnknownRequestError;
+        return prismaUnknownRequestError.message;
+      }
+
+      if (error?.name === 'PrismaClientValidationError') {
+        return 'there was an error with data validation, check your spelling or if fields are missing & try again';
+      }
+
+      const defaultError = error as Error;
+      return defaultError.message;
     }
   }
 
-  async findAll() {
+  async findAll(): Promise<Todo[] | string> {
     try {
       return await this.prisma.todo.findMany();
     } catch (error) {
-      return error;
+      const defaultError = error as Error;
+      return defaultError.message;
     }
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<Todo | string> {
     try {
       return await this.prisma.todo.findFirst({
         where: {
@@ -38,11 +60,12 @@ export class TodosService {
         },
       });
     } catch (error) {
-      return error;
+      const defaultError = error as Error;
+      return defaultError.message;
     }
   }
 
-  async findAllTodosForAPage(todoPageId: string) {
+  async findAllTodosForAPage(todoPageId: string): Promise<Todo[] | string> {
     try {
       return await this.prisma.todo.findMany({
         where: {
@@ -50,11 +73,15 @@ export class TodosService {
         },
       });
     } catch (error) {
-      return error;
+      const defaultError = error as Error;
+      return defaultError.message;
     }
   }
 
-  async update(id: string, updateTodoDto: UpdateTodoDto) {
+  async update(
+    id: string,
+    updateTodoDto: UpdateTodoDto,
+  ): Promise<Todo | string> {
     try {
       const currentDate = new Date();
 
@@ -71,11 +98,12 @@ export class TodosService {
         },
       });
     } catch (error) {
-      return error;
+      const defaultError = error as Error;
+      return defaultError.message;
     }
   }
 
-  async remove(id: string) {
+  async remove(id: string): Promise<Todo | string> {
     try {
       return this.prisma.todo.delete({
         where: {
@@ -83,7 +111,8 @@ export class TodosService {
         },
       });
     } catch (error) {
-      return error;
+      const defaultError = error as Error;
+      return defaultError.message;
     }
   }
 }
