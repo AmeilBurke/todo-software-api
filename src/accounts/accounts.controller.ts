@@ -17,7 +17,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 export class AccountsController {
   constructor(private readonly accountsService: AccountsService) {}
 
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @Post()
   create(@Body() createAccountDto: CreateAccountDto) {
     return this.accountsService.create(createAccountDto);

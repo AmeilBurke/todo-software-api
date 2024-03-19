@@ -27,6 +27,8 @@ model TodoPage {
   todoPage_todoList       Todo[]
   todoPage_createdDate    String
   todoPage_isPageArchived Boolean
+  createdBy               Account           @relation(fields: [todoPage_createdBy], references: [account_id])
+  todoPage_createdBy      Int
   InvitedAccounts         InvitedAccounts[]
 }
 
@@ -38,12 +40,12 @@ model Account {
   role             Role              @relation(fields: [account_role], references: [role_id])
   account_role     Int
   InvitedAccounts  InvitedAccounts[]
+  TodoPage         TodoPage[]
 }
 
 model InvitedAccounts {
   todoPage    TodoPage @relation(fields: [todoPage_id], references: [todoPage_id])
   todoPage_id Int
-
   account    Account @relation(fields: [account_id], references: [account_id])
   account_id Int
 

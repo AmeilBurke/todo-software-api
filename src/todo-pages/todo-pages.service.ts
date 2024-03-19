@@ -26,6 +26,7 @@ export class TodoPagesService {
             .trim(),
           todoPage_isPageArchived: false,
           todoPage_createdDate: `${currentDate.getDate()}-${currentDate.getMonth() + 1}-${currentDate.getFullYear()}`,
+          todoPage_createdBy: createTodoPage.todoPageCreatedBy,
         },
       });
     } catch (error) {
@@ -69,7 +70,10 @@ export class TodoPagesService {
     }
   }
 
-  async update(id: string, updateTodoPageDto: UpdateTodoPageDto): Promise<TodoPage | string> {
+  async update(
+    id: string,
+    updateTodoPageDto: UpdateTodoPageDto,
+  ): Promise<TodoPage | string> {
     try {
       return await this.prisma.todoPage.update({
         where: {
